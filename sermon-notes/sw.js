@@ -1,5 +1,5 @@
 // Offline cache for the app shell. Bump VERSION when files change.
-var VERSION = 'sermon-notebook-v1';
+var VERSION = 'sermon-notebook-v2';
 var FILES = ['./', 'index.html', 'styles.css', 'app.js', 'bible.js', 'manifest.webmanifest', 'icon.svg'];
 
 self.addEventListener('install', function (e) {

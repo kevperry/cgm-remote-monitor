@@ -155,7 +155,15 @@
       setSaveState('Not saved!'); toast('Could not save: ' + (e && e.message || e));
     });
   };
-  var saveSoon = debounce(function () { var n = current(); if (n) { saveNow(n).then(renderNav).then(renderList); } }, 500);
+  // Remember which note has unsaved edits, so switching notes or leaving the page never drops one.
+  var pendingNote = null;
+  var saveSoonRaw = debounce(function () { flushSave(); }, 500);
+  function saveSoon() { pendingNote = current() || pendingNote; saveSoonRaw(); }
+  function flushSave() {
+    var n = pendingNote; pendingNote = null;
+    if (n && state.notes.indexOf(n) !== -1) return saveNow(n).then(renderNav).then(renderList);
+    return Promise.resolve();
+  }
   function setSaveState(s) { $('#saveState').textContent = s; }
 
   function parsedRefs(n) {
@@ -540,6 +548,7 @@
     var n = current();
     if (!n) return;
     commitPendingChipInputs();
+    if (pendingNote === n) flushSave();
     if (isBlank(n) && !(n.tags || []).length && !(n.scriptures || []).length) {
       state.notes = state.notes.filter(function (x) { return x.id !== n.id; });
       store.del(n.id);
@@ -820,8 +829,8 @@
       if (e.key === 'n') { e.preventDefault(); newNote('idea'); }
       if (e.key === '/') { e.preventDefault(); $('#search').focus(); }
     });
-    window.addEventListener('beforeunload', function () { var n = current(); if (n) { commitPendingChipInputs(); store.put(n); } });
-    document.addEventListener('visibilitychange', function () { if (document.hidden) { var n = current(); if (n) store.put(n); } });
+    window.addEventListener('pagehide', function () { if (current()) commitPendingChipInputs(); flushSave(); });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); });
   }
 
   // ---------- Boot ----------
