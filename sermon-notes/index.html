@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sermon Notebook</title>
+  <meta name="description" content="Store ideas, illustrations, quotes, mottos, statements and clippings for future sermons.">
+  <meta name="theme-color" content="#7a4b2a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Sermons">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="view-list">
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" class="brand-icon" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20v3H6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 6v8M9 9h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>Sermon Notebook</span>
+      </div>
+
+      <div class="new-wrap">
+        <button class="btn primary new-btn" id="newBtn">+ New note</button>
+        <div class="new-types" id="newTypes"></div>
+      </div>
+
+      <nav class="nav" id="nav"></nav>
+
+      <div class="sidebar-foot">
+        <button class="btn ghost small" id="exportBtn" title="Download a backup of everything">Backup</button>
+        <label class="btn ghost small" title="Restore from a backup file">Import<input type="file" id="importInput" accept="application/json,.json" hidden></label>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <!-- Note list -->
+    <section class="list-pane">
+      <header class="list-head">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input type="search" id="search" placeholder="Search notes or a passage…" title="Search words, #tags, or a passage like Rom 8" autocomplete="off">
+        </div>
+      </header>
+      <div class="list-sub">
+        <h2 id="listTitle">All notes</h2>
+        <div class="list-tools">
+          <button class="icon-btn" id="randomBtn" title="Surprise me — open a random note from this list">
+            <svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <select id="sort" aria-label="Sort notes">
+            <option value="updated">Recently edited</option>
+            <option value="created">Recently added</option>
+            <option value="title">Title A–Z</option>
+            <option value="used">Least used</option>
+          </select>
+        </div>
+      </div>
+      <ul class="note-list" id="noteList"></ul>
+      <div class="empty" id="listEmpty" hidden></div>
+    </section>
+
+    <!-- Editor -->
+    <section class="editor-pane" id="editorPane">
+      <div class="editor-empty" id="editorEmpty">
+        <p>Select a note, or start a new one.</p>
+        <p class="hint">Tip: press <kbd>N</kbd> for a new note, <kbd>/</kbd> to search.</p>
+      </div>
+
+      <div class="editor" id="editor" hidden>
+        <header class="editor-head">
+          <button class="icon-btn back-btn" id="backBtn" aria-label="Back to list">
+            <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <select id="fType" class="type-select" aria-label="Note type"></select>
+          <select id="fNotebook" aria-label="Notebook"></select>
+          <span class="spacer"></span>
+          <span class="save-state" id="saveState"></span>
+          <button class="icon-btn" id="favBtn" title="Favorite">
+            <svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9L12 3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="icon-btn" id="copyBtn" title="Copy as text (for your manuscript)">
+            <svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+          </button>
+          <button class="icon-btn danger" id="deleteBtn" title="Delete note">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </header>
+
+        <div class="editor-scroll">
+          <input id="fTitle" class="title-input" placeholder="Title" autocomplete="off">
+
+          <div class="meta-grid">
+            <label class="meta-label" for="fScripture">Scripture</label>
+            <div class="chip-input" data-field="scriptures">
+              <div class="chips"></div>
+              <input id="fScripture" placeholder="e.g. John 15:5, Ps 23" autocomplete="off">
+            </div>
+
+            <label class="meta-label" for="fTags">Themes / tags</label>
+            <div class="chip-input" data-field="tags">
+              <div class="chips"></div>
+              <input id="fTags" placeholder="e.g. grace, suffering, Advent" autocomplete="off" list="tagSuggest">
+              <datalist id="tagSuggest"></datalist>
+            </div>
+
+            <label class="meta-label" for="fAuthor" id="authorLabel">Author / source</label>
+            <input id="fAuthor" class="meta-input" placeholder="e.g. Tim Keller, The Reason for God, p. 72" autocomplete="off">
+
+            <label class="meta-label" for="fUrl">Link</label>
+            <div class="url-row">
+              <input id="fUrl" class="meta-input" type="url" placeholder="https://" autocomplete="off">
+              <a id="urlOpen" class="icon-btn" target="_blank" rel="noopener" title="Open link" hidden>
+                <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="toolbar" role="toolbar" aria-label="Formatting">
+            <button data-cmd="bold" title="Bold (Ctrl/⌘ B)"><b>B</b></button>
+            <button data-cmd="italic" title="Italic (Ctrl/⌘ I)"><i>I</i></button>
+            <button data-cmd="underline" title="Underline"><u>U</u></button>
+            <button data-cmd="h3" title="Heading">H</button>
+            <button data-cmd="insertUnorderedList" title="Bulleted list">•</button>
+            <button data-cmd="insertOrderedList" title="Numbered list">1.</button>
+            <button data-cmd="blockquote" title="Quote block">❝</button>
+            <button data-cmd="removeFormat" title="Clear formatting">⌫</button>
+            <span class="spacer"></span>
+            <label class="tb-img" title="Add a photo or screenshot">
+              <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="m4 18 5-5 4 4 3-3 4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              <span>Image</span>
+              <input type="file" id="imgInput" accept="image/*" multiple hidden>
+            </label>
+          </div>
+
+          <div id="fBody" class="body-input" contenteditable="true" spellcheck="true"></div>
+
+          <div class="images" id="images"></div>
+
+          <section class="used">
+            <h3>Used in sermons</h3>
+            <ul id="usedList"></ul>
+            <form class="used-add" id="usedForm">
+              <input type="date" id="usedDate" aria-label="Date preached">
+              <input type="text" id="usedSermon" placeholder="Sermon title / passage" aria-label="Sermon">
+              <button class="btn small" type="submit">Log use</button>
+            </form>
+          </section>
+
+          <p class="stamps" id="stamps"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="lightbox" id="lightbox" hidden><img alt=""></div>
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="bible.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
